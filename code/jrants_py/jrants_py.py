@@ -9,8 +9,8 @@ from utils.mysqlite_util import DownloadFileDB
 from utils.xunrennvshen_download import download_image_header, download_image_header_noname
 
 if __name__ == '__main__':
-    start_index = "10" #初始值是1
-    pic_start_index = 6  #初始值是0
+    start_index = "2" #初始值是1
+    pic_start_index = 0  #初始值是0
     pic_start_page = 0   #初始值是0  需要-2
     db_title = ""
     download_fail_list = []
@@ -35,7 +35,8 @@ if __name__ == '__main__':
         "upgrade-insecure-requests": '1',
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.37 (KHTML, like Gecko) Chrome/143.0.0.1 Safari/537.37"
     }
-    url = "https://jrants.com/category/korean/bimilstory/page/"
+    # puremedia 、bimilstory、makemodel、moon-night-snap、leehee-express、artgravia
+    url = "https://jrants.com/category/korean/puremedia/page/"
     content_url = url + start_index
     print(content_url)
     # 1. 获取原始字节数据（不要先转text）
