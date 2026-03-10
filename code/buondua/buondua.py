@@ -1,27 +1,34 @@
 import random
 import re
+import sys
+import os
+
+# Add the parent directory to Python path to find utils module
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import cfscrape
 import requests
 from colorama import Fore, Style
 from lxml import etree
-import os
 
 import time
 
 from buondua_download import download_image
-from utils.common_utils import convert_page_index_to_num, convert_page_index_to_num_size, clean_windows_folder_name
+from utils.common_utils import convert_page_index_to_num_size, clean_windows_folder_name
 from utils.mysqlite_util import DownloadFileDB
 
 if __name__ == '__main__':
-    start_index = 2 #初始值是1
+    start_index = 5 #初始值是1
     page_num = 20
-    pic_start_index = 2  #初始值是0
-    pic_start_page = 7   #初始值是1
+    pic_start_index = 14  #初始值是0
+    pic_start_page = 6   #初始值是1
     download_fail_list = []
-    if not os.path.exists("../../file/buondua"):
-        os.makedirs("../../file/buondua")
-    a_name = os.path.abspath('../../file/buondua')
+    # Get the absolute path to the project root based on the current file location
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    save_dir = os.path.join(project_root, "file", "buondua")
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+    a_name = save_dir
     print(f'总路径：{a_name}')
     db = DownloadFileDB()
     scraper = cfscrape.create_scraper()
@@ -43,7 +50,7 @@ if __name__ == '__main__':
     # https://buondua.com/tag/private-photoshoot-12486
     # https://buondua.com/tag/xr-uncensored-11790
     # https://buondua.com/tag/jvid-11832
-    url = "https://buondua.com/tag/private-photoshoot-12486?start="
+    url = "https://buondua.com/tag/jvid-11832?start="
     base_url = "https://buondua.com"
     content_url = url + str((start_index-1)*20)
     print(content_url)

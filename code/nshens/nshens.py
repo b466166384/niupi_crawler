@@ -18,7 +18,7 @@ from utils.mysqlite_util import DownloadFileDB
 from utils.xunrennvshen_download import download_image, download_image_header_noname
 
 if __name__ == '__main__':
-    start_index = 2 #初始值是1
+    start_index = 5 #初始值是1
     page_num = 20
     pic_start_index = 0  #初始值是0
     pic_start_page = 1   #初始值是1
@@ -89,8 +89,16 @@ if __name__ == '__main__':
                 detail_page_text = page.content()
                 # print(detail_page_text)
                 detail_tree = etree.HTML(detail_page_text, parser=parser)
+                # 判断是不是VIP的VIP的跳过
+                tag_list = detail_tree.xpath(
+                    '//a[@class="ma-2 v-btn v-btn--is-elevated v-btn--has-bg theme--light v-size--default black"]/span[@class="v-btn__content"]/text()')
+                if 'VIP' in tag_list:
+                    continue
                 detail_info = detail_tree.xpath('//h3/text()')[0]
                 title = detail_info
+                if '素人流出不雅照' in title:
+                    print('素人流出不雅照跳过')
+                    continue
                 detail_title = clean_windows_folder_name(title)
                 exact_result = db.get_by_title_custom(title=detail_title, table_name="nshens")
                 print(f"精确匹配结果：{exact_result}")

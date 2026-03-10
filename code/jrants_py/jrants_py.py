@@ -3,14 +3,16 @@ import requests
 from colorama import Fore, Style
 from lxml import etree
 import os
+import time
+import random
 
 from utils.common_utils import clean_windows_folder_name
 from utils.mysqlite_util import DownloadFileDB
 from utils.xunrennvshen_download import download_image_header, download_image_header_noname
 
 if __name__ == '__main__':
-    start_index = "2" #初始值是1
-    pic_start_index = 0  #初始值是0
+    start_index = "3" #初始值是1
+    pic_start_index = 9  #初始值是0
     pic_start_page = 0   #初始值是0  需要-2
     db_title = ""
     download_fail_list = []
@@ -102,11 +104,12 @@ if __name__ == '__main__':
         # ========== 关键调整3：多页下载逻辑归整，且已被跳过逻辑覆盖 ==========
         # 循环处理所有分页（原代码只处理了第二页，优化为循环更通用）
         max_page = len(page_url_list)
-        print(f"{max_page}  {page_url_list}")
+        print(f"{page_url_list}")
         if max_page >= 1:
             for page_index, page_param in enumerate(page_url_list):
                 if page_index < pic_start_page:
                     continue
+                time.sleep(random.uniform(5, 10))
                 page_url = f"{page_param}"
                 print(f"{page_param}  {len(page_url_list)}")
                 detail_page_text = requests.get(url=page_url, headers=custom_headers).text
@@ -127,11 +130,12 @@ if __name__ == '__main__':
                             download_fail_list.append(my_map)
                     else:
                         print(f"第{index + 1}张图片{fileSize}下载完成")
-
+                print(f"{Fore.BLUE}第{detail_index}个的第{page_index}页{db_title}下载完成共{max_page}页{Style.RESET_ALL}")
         # 6. 下载完成后插入数据库（原逻辑保留）
-        print(f"第{start_index}页的第{detail_index}条{db_title}下载完成")
+        print(f"{Fore.GREEN}第{start_index}页的第{detail_index}条{db_title}下载完成{Style.RESET_ALL}")
         new_id = db.insert_custom(title=db_title, table_name="jrants")
         print(f"新增记录成功，id：{new_id}")
+        time.sleep(random.uniform(5, 10))
         if pic_start_page != 0:
            print(download_fail_list)
            exit(0)

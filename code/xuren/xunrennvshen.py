@@ -4,6 +4,12 @@ from lxml import etree
 import re
 import os
 
+import sys
+
+
+# Add the parent directory to Python path to find utils module
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from utils.mysqlite_util import DownloadFileDB
 from utils.xunrennvshen_download import download_image
 # 110页开始是2023年数据
@@ -17,9 +23,12 @@ if __name__ == '__main__':
     yearInt = 0
     db_title = ""
     download_fail_list = []
-    if not os.path.exists("../../file/美女图集"):
-        os.makedirs("../../file/美女图集")
-    a_name = os.path.abspath('../../file/美女图集')
+    # Get the absolute path to the project root based on the current file location
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    save_dir = os.path.join(project_root, "file", "xunren")
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+    a_name = save_dir
     print(f'总路径：{a_name}')
     db = DownloadFileDB()
     headers = {

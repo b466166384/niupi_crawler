@@ -8,8 +8,8 @@ from utils.xunrennvshen_download import download_image_header
 
 if __name__ == '__main__':
     # 设置开始的页数 第一页从1开始
-    start_index = "2"
-    pic_start_index = 0  #初始值0
+    start_index = "3"
+    pic_start_index = 14  #初始值0
     pic_start_page = 2   #初始值是2
     yearInt = 0
     db_title = ""
@@ -52,7 +52,7 @@ if __name__ == '__main__':
         # 1. 跳过指定索引前的条目（原逻辑保留）
         if detail_index < pic_start_index:
             continue
-        print(f"{Fore.YELLOW}pic_start_index:{pic_start_index}{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}pic_start_index:{detail_index}{Style.RESET_ALL}")
         # 2. 构造详情页URL并解析页面
         detail_url = base_url + detail_param
         detail_page_text = requests.get(url=detail_url, headers=custom_headers).text
@@ -108,7 +108,7 @@ if __name__ == '__main__':
         if max_page > 1:
             for show_page in range(pic_start_page, max_page + 1):
                 page_url = f"{detail_url}?page={show_page}"
-                print(page_url+"    "+str(total_page))
+                print(f"{Fore.YELLOW}{page_url}  第{detail_index}个共有{str(total_page)}页数据 {Style.RESET_ALL}")
                 detail_page_text = requests.get(url=page_url, headers=custom_headers).text
                 detail_tree = etree.HTML(detail_page_text, parser=parser)
                 pic_url_list = detail_tree.xpath('//div[@class="VKSUBTSWA contentme"]//a//img/@src')
