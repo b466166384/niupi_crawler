@@ -9,6 +9,29 @@ from DownloadFileDB import DownloadFileDB
 from ImageDownloader import download_image
 import time
 
+def process_detail_page(detail_url, base_url, headers, a_name, pic_start_index, download_fail_list):
+    parser = etree.HTMLParser(encoding="utf-8")
+    detail_url = base_url + detail_url
+    detail_page_text = requests.get(url=detail_url, headers=headers).text
+    detail_tree = etree.HTML(detail_page_text, parser=parser)
+    detail_title = detail_tree.xpath('//div[@class="inside-article"]//h1[@class="entry-title"]/text()')[0]
+    file_date = detail_tree.xpath('//div[@class="entry-meta"]//time[@class="entry-date published"]/text()')[0]
+    detail_title = f"{detail_title} ({file_date})"
+    pic_list = detail_tree.xpath('//div[@class="inside-article"]//img/@data-src')
+    pic_list = [pic for pic in pic_list if '260x390' not in pic]
+    print(f"标题:{detail_title},详情页:{detail_url},共{len(pic_list)}张图片")
+    save_file_path = os.path.join(a_name, detail_title)
+    for pic_index, pic in enumerate(pic_list):
+        if pic_index < pic_start_index:
+            continue
+        fileSize = download_image(pic, save_file_path, headers)
+        if fileSize == "失败":
+            download_fail_list.append({"title": detail_title, "pic": pic})
+            print(f"{Fore.RED}下载失败:{download_fail_list}{Style.RESET_ALL}")
+            continue
+        print(pic, fileSize)
+
+
 if __name__ == '__main__':
     page = 2 #初始值1
     detail_page = 6 #初始值0
@@ -60,6 +83,12 @@ if __name__ == '__main__':
                 print(f"{Fore.RED}下载失败:{download_fail_list}{Style.RESET_ALL}")
                 continue
             print(pic, fileSize)
+        page_links = detail_tree.xpath('//div[@class="page-links"]')
+        if page_links:
+            print(f"发现分页标签，跳过该详情页")
+            page_links = detail_tree.xpath('//div[@class="page-links"]//a/@href')
+            for page_link in page_links:
+                process_detail_page(page_link, base_url, headers, a_name, pic_start_index, download_fail_list)
         print(f'{Fore.YELLOW}第{page}页的第{detail_index}条{detail_title}下载完毕{Style.RESET_ALL}')
         new_id = db.insert_custom(title=detail_title, table_name="eetuku")
         print(f"{Fore.GREEN}新增记录成功，id：{new_id}{Style.RESET_ALL}")
