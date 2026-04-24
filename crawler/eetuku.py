@@ -33,8 +33,8 @@ def process_detail_page(detail_url, base_url, headers, a_name, pic_start_index, 
 
 
 if __name__ == '__main__':
-    page = 1 #初始值1
-    detail_page = 3 #初始值0
+    page = 2 #初始值1
+    detail_page = 6 #初始值0
     pic_start_index = 0 #初始值0
     download_fail_list = []
     headers = {
@@ -76,6 +76,7 @@ if __name__ == '__main__':
         for pic_index, pic in enumerate(pic_list):
             if pic_index < pic_start_index:
                 continue
+            print(f"第{pic_index}张图片:")
             fileSize = download_image(pic, save_file_path, headers)
             if fileSize == "失败":
                 download_fail_list.append({"title": detail_title, "pic": pic})
@@ -94,6 +95,6 @@ if __name__ == '__main__':
         if pic_start_index != 0:
             print(f"第{page}页所有数据下载完毕，下载失败{download_fail_list}")
             exit(0)
-        time.sleep(60)
+        time.sleep(30)
     print(f"第{page}页所有数据下载完毕，下载失败{download_fail_list}")
     exit(0)
