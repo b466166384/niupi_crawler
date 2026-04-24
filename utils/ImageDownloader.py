@@ -32,12 +32,6 @@ def download_image(img_url, save_dir,HEADERS):
         if response.status_code != 200:
             print(f"请求失败，状态码: {response.status_code}")
             return "失败"
-
-        # content_type = response.headers.get('Content-Type', '')
-        # if content_type and not content_type.startswith('image/'):
-        #     print(f"返回内容不是图片，类型: {content_type}")
-        #     return "失败"
-
         img_name = os.path.basename(img_url)
         save_path = os.path.join(save_dir, img_name)
 
@@ -71,3 +65,4 @@ def download_image(img_url, save_dir,HEADERS):
     except Exception as e:
         print(f"{Fore.RED}下载失败: {str(e)[:80]}{Style.RESET_ALL}")
         return "失败"
+
