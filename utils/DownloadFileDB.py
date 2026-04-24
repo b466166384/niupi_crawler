@@ -187,6 +187,38 @@ class DownloadFileDB:
         finally:
             self._close()
 
+    def get_by_url_custom(
+            self,
+            table_name: str,
+            url: Optional[str] = None,
+            fuzzy: bool = False  # 是否模糊匹配标题
+    ) -> List[Dict]:
+        if url is None and table_name is None:
+            raise ValueError("至少需要提供 title 和table_namen表名 作为查询条件")
+        # 构建查询条件和参数
+        conditions = []
+        params = []
+        # 处理标题条件（支持模糊匹配）
+        if url is not None:
+            if fuzzy:
+                # 模糊匹配：标题包含该字符串（前后加 %）
+                conditions.append("url LIKE %s")
+                params.append(f"%{url}%")
+            else:
+                # 精确匹配：标题完全相等
+                conditions.append("url = %s")
+                params.append(url)
+        # 拼接 SQL 语句
+        sql = f"SELECT id, title,url FROM {table_name} WHERE {' AND '.join(conditions)}"
+        try:
+            self._connect()
+            self.cursor.execute(sql, params)
+            return self.cursor.fetchall()  # 返回所有匹配的记录
+        except Exception as e:
+            raise RuntimeError(f"查询失败：{str(e)}")
+        finally:
+            self._close()        
+
     def insert_custom(self, title: str, table_name:str) -> int:
         """
         新增一条记录
@@ -201,6 +233,22 @@ class DownloadFileDB:
         try:
             self._connect()
             self.cursor.execute(sql, (title,))
+            self.conn.commit()  # 提交事务
+            return self.cursor.lastrowid  # 返回自增id
+        except Exception as e:
+            self.conn.rollback()  # 出错回滚
+            raise RuntimeError(f"新增记录失败：{str(e)}")
+        finally:
+            self._close()
+
+    def insert_url_custom(self, title: str, url: str, table_name:str) -> int:
+        if not title or len(title) > 255:
+            raise ValueError("标题不能为空且长度不能超过255字符")
+
+        sql = f"INSERT INTO {table_name} (title, url) VALUES (%s, %s)"
+        try:
+            self._connect()
+            self.cursor.execute(sql, (title, url))
             self.conn.commit()  # 提交事务
             return self.cursor.lastrowid  # 返回自增id
         except Exception as e:
