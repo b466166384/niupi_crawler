@@ -61,7 +61,11 @@ if __name__ == '__main__':
         link = item.xpath('.//a/@href')
         if link:
             detail_list.append(link[0])
-    print(f"第{page}页,共{len(detail_list)}条数据",f"{detail_list}")
+    print(f"第{page}页,共{len(detail_list)}条数据")
+    if page > 0:
+        start_index = page * 20
+        detail_list = detail_list[start_index:]
+        print(f"从第{start_index}条开始处理，剩余{len(detail_list)}条")
     for detail_index, detail_url in enumerate(detail_list):
         exact_result = db.get_by_url_custom(url=detail_url, table_name="pornpics")
         if exact_result:
