@@ -33,8 +33,8 @@ def process_detail_page(detail_url, base_url, headers, a_name, pic_start_index, 
 
 
 if __name__ == '__main__':
-    page = 2 #初始值1
-    detail_page = 6 #初始值0
+    page = 4 #初始值1
+    detail_page = 0 #初始值0
     pic_start_index = 0 #初始值0
     download_fail_list = []
     headers = {
